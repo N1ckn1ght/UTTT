@@ -10,10 +10,24 @@ If a move is played so that it is to win a local board by the rules of normal ti
 
 There are other variants of Ultimate Tic-Tac-Toe rules, e.g. that one where players are able to make a move on already adjudicated boards, however this variation contains really simple winning strategy thus I've decided to avoid its implementation.
 
-### Example of a move
+# How to play
+
+There are two kinds of moves: full and specified.
+
+You'll be required to input full move only if it's unclear on which board it's made;
+
+Otherwise you must input a specified one with only two coordinates (x, y).
+
+### Example of the full move (bx, by, x, y)
 
 2 2 0 0
 
 This input will place X on board (2, 2) in cell (0, 0) if possible;
 
 Otherwise you'll need to repeat the input until it's correct.
+
+### Example of a specified board move (x, y)
+
+1 1
+
+This input will place X on board (bx, by) in cell (0, 0) if possible where (bx, by) are coordinates of the last move by (x, y).
