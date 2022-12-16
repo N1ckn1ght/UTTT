@@ -36,7 +36,12 @@ void printEuristAnalysis(Field& field, size_t lines, float k) {
 	size_t amount = min(moves.size(), size_t(9));
 	cout << "\nTop " << amount << " Eurist moves:\n";
 	for (size_t i = 0; i < amount; i++) {
-		cout << "(" << (moves[i].bx + 1) << ", " << (moves[i].by + 1) << ", " << (moves[i].x + 1) << ", " << (moves[i].y + 1) << ")\t with " << size_t(moves[i].chance * 100) << "% chance of winning.\n";
+		if (field.nextMoveIsAnywhere()) {
+			cout << "(" << (moves[i].bx + 1) << ", " << (moves[i].by + 1) << ", " << (moves[i].x + 1) << ", " << (moves[i].y + 1) << ")\t with " << size_t(moves[i].chance * 100) << "% chance of winning.\n";
+		}
+		else {
+			cout << "(" << (moves[i].x + 1) << ", " << (moves[i].y + 1) << ")\t with " << size_t(moves[i].chance * 100) << "% chance of winning.\n";
+		}
 	}
 	cout << "\n";
 }
@@ -71,7 +76,7 @@ void playerVsPlayer(Field& field, bool analysisMode = false, size_t analysisLine
 			} while (!success);
 		}
 		else {
-			cout << field << "\n" << getSide(field.getTurn()) << " turn on (" << field.getLastMove().x << ", " << field.getLastMove().y << ") board.\n";
+			cout << field << "\n" << getSide(field.getTurn()) << " turn on (" << field.getLastMove().x + 1 << ", " << field.getLastMove().y + 1 << ") board.\n";
 			do {
 				cout << "Input: {X (1-3)} {Y (1-3)} from left-top.\n\n";
 				cin >> x >> y;
