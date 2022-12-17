@@ -1,7 +1,7 @@
 #include "Eurist.h"
 #include <vector>
 
-Eurist::Eurist(size_t lines_, float k_, bool debug_, bool tweak_)
+Eurist::Eurist(size_t lines_, float k_, bool debug_, float tweak_)
 {
 	lines = lines_;
 	k = k_;
@@ -10,6 +10,7 @@ Eurist::Eurist(size_t lines_, float k_, bool debug_, bool tweak_)
 	ratios = nullptr;
 	possible = nullptr;
 	count = nullptr;
+	positionalMult = nullptr;
 	countAll = 0;
 	moves = 0;
 }
@@ -101,9 +102,6 @@ void Eurist::eval(Field& field, const size_t by, const size_t bx, std::vector<Eu
 			size_t b2x = bx;
 			size_t move = i;
 			// tweak
-			if (tweak && field_.adjudicatedFor(possible[by][bx][i].y, possible[by][bx][i].x) != Cell::Empty && field_.adjudicate() == Cell::Empty) {
-				positionalMult[by][bx][i] = 0.88;
-			}
 
 			// Continue by playing random game 'til it's possible
 			Cell winner = field_.adjudicate();
@@ -124,6 +122,17 @@ void Eurist::eval(Field& field, const size_t by, const size_t bx, std::vector<Eu
 				// Case: the next move must be done anywhere but the specific field
 				// Worth mentioning, this must work the same as: if (field_.nextMoveIsAnywhere()) condition
 				if (!count_[b2y][b2x]) {
+					
+					// This is also where 'AnyMove' positional tweak comes into play
+					if (field_.adjudicatedFor(b2y, b2x) != Cell::Empty) {
+						if (field_.getTurn() == side) {
+							positionalMult[by][bx][i]++;
+						}
+						else {
+							positionalMult[by][bx][i]--;
+						}
+					}
+
 					move = rand() % countAll_;
 					bool dropped = false;
 					while (!dropped) {
@@ -163,7 +172,22 @@ void Eurist::eval(Field& field, const size_t by, const size_t bx, std::vector<Eu
 	}
 
 	for (size_t i = 0; i < count[by][bx]; i++) {
-		euristMoves.push_back(EuristMove(by, bx, possible[by][bx][i].y, possible[by][bx][i].x, ratios[by][bx][possible[by][bx][i].y][possible[by][bx][i].x].getChance() * positionalMult[by][bx][i], i));
+		float chance = ratios[by][bx][possible[by][bx][i].y][possible[by][bx][i].x].getChance();
+		if (tweak) {
+			std::cout << "\t##, positionalMult[" << by << "][" << bx << "][" << i << "] = " << positionalMult[by][bx][i] << "\n";
+			std::cout << "\t\tthe move is (bx, by, x, y): " << bx << " " << by << " " << possible[by][bx][i].x << " " << possible[by][bx][i].y << "\n";
+			std::cout << "\t\tinitial chance is: " << chance << "\n";
+			for (size_t i = 0; i < positionalMult[by][bx][i]; i++) {
+				chance += (1 - chance) * tweak;
+				std::cout << "\t\t\tPlayed out 1 cycle\n";
+			}
+			for (size_t i = 0; i < -positionalMult[by][bx][i]; i++) {
+				chance -= chance * tweak;
+				std::cout << "\t\t\tPlayed out 2 cycle\n";
+			}
+			std::cout << "\t\tnew chance is: " << chance << "\n";
+		}
+		euristMoves.push_back(EuristMove(by, bx, possible[by][bx][i].y, possible[by][bx][i].x, chance, i));
 	}
 }
 

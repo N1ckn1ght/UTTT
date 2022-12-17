@@ -16,6 +16,8 @@ private:
 	float k;
 	// Should it write debug information in std::cout?
 	bool debug;
+	// Eval addition on positional threats
+	float tweak;
 
 	// getChance() will return probability of winning on this move from 0 to 1
 	Ratio**** ratios;
@@ -25,9 +27,8 @@ private:
 	size_t** count;
 	// general counter of possible moves (no matter which board)
 	size_t countAll;
-	// tweak
+	// arays of positional eval multipliers
 	float*** positionalMult;
-	bool tweak;
 
 	// General amount of moves has been made during the analysis
 	size_t moves;
@@ -40,9 +41,9 @@ public:
 	// lines_: how much analysis line shall be distributed upon a choice
 	// k     : multiplier of lines_ in case of any board first choice
 	// debug : this stands just for an additional output of how many moves algo did calculate
-	// tweak : enable or disable positional tweak for Eurist
-	//         keep in mind: without the tweak it'll be much weaker (not in case of PTTT tho)
-	Eurist(size_t lines_, float k_, bool debug_ = false, bool tweak_ = true);
+	// tweak : eval modificator for certain positional threats
+	//         when set to 0 it won't make a difference, recommended must be in (0; 1)
+	Eurist(size_t lines_, float k_, bool debug_ = false, float tweak_ = 0);
 	~Eurist();
 	
 	// Will return AMOUNT of moves algorithm has been made;
