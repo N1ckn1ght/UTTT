@@ -20,9 +20,9 @@ Otherwise you must input a specified one with only two coordinates (x, y).
 
 ### Example of the full move (bx, by, x, y)
 
-2 2 0 0
+3 3 1 1
 
-This input will place X on board (2, 2) in cell (0, 0) if possible;
+This input will place X on board (3, 3) in cell (1, 1) if possible;
 
 Otherwise you'll need to repeat the input until it's correct.
 
@@ -30,4 +30,4 @@ Otherwise you'll need to repeat the input until it's correct.
 
 1 1
 
-This input will place X on board (bx, by) in cell (0, 0) if possible where (bx, by) are coordinates of the last move by (x, y).
+This input will place X on board (bx, by) in cell (1, 1) if possible where (bx, by) are coordinates of the last move by (x, y).
