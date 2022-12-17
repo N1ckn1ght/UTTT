@@ -39,15 +39,15 @@ Field::~Field()
 
 bool Field::insert(const size_t by, const size_t bx, const size_t y, const size_t x)
 {
-	if (by > 2 || bx > 2 || y > 2 || x > 2 || (!nextMoveIsAnywhere() && (by != lastMove.y || bx != lastMove.x)) || ptr[by][bx][y][x] != Cell::Empty) {
-		return false;
+	if (isPossibleMove(by, bx, y, x)) {
+		ptr[by][bx][y][x] = turn;
+		turn = nextCell(turn);
+		lastBoard = Coord(by, bx);
+		lastMove = Coord(y, x);
+		adjudicateFor(by, bx);
+		return true;
 	}
-	ptr[by][bx][y][x] = turn;
-	turn = nextCell(turn);
-	lastBoard = Coord(by, bx);
-	lastMove = Coord(y, x);
-	adjudicateFor(by, bx);
-	return true;
+	return false;
 }
 
 Cell Field::get(size_t by, size_t bx, size_t y, size_t x)
@@ -97,6 +97,22 @@ Cell Field::adjudicatedFor(size_t by, size_t bx)
 	return boards[by][bx];
 }
 
+bool Field::nextMoveIsAnywhere()
+{
+	if (lastMove.y == -1 || adjudicatedFor(lastMove.y, lastMove.x) != Cell::Empty) {
+		return true;
+	}
+	return false;
+}
+
+bool Field::isPossibleMove(const size_t by, const size_t bx, const size_t y, const size_t x)
+{
+	if (by > 2 || bx > 2 || y > 2 || x > 2 || (!nextMoveIsAnywhere() && (by != lastMove.y || bx != lastMove.x)) || ptr[by][bx][y][x] != Cell::Empty) {
+		return false;
+	}
+	return true;
+}
+
 Cell Field::getTurn()
 {
 	return turn;
@@ -115,14 +131,6 @@ Coord Field::getLastMove()
 Cell Field::getBoard(size_t by, size_t bx)
 {
 	return boards[by][bx];
-}
-
-bool Field::nextMoveIsAnywhere()
-{
-	if (lastMove.y == -1 || adjudicatedFor(lastMove.y, lastMove.x) != Cell::Empty) {
-		return true;
-	}
-	return false;
 }
 
 void Field::set(const size_t by, const size_t bx, const size_t y, const size_t x, const Cell elem)
@@ -150,7 +158,7 @@ void Field::setBoard(const size_t by, const size_t bx, Cell elem)
 	boards[by][bx] = elem;
 }
 
-std::ostream& operator<<(std::ostream& out, const Field& field)
+std::ostream& operator<<(std::ostream& out, Field& field)
 {
 	for (size_t by = 0; by < 3; by++) {
 		out << " _ _ _   _ _ _   _ _ _";
@@ -162,7 +170,7 @@ std::ostream& operator<<(std::ostream& out, const Field& field)
 			for (size_t bx = 0; bx < 3; bx++) {
 				out << "|";
 				for (size_t x = 0; x < 3; x++) {
-					switch (field.ptr[by][bx][y][x]) {
+					switch (field.get(by, bx, y, x)) {
 					// real cases
 					case Cell::Cross:
 						out << "X";
@@ -171,11 +179,16 @@ std::ostream& operator<<(std::ostream& out, const Field& field)
 						out << "O";
 						break;
 					case Cell::Empty:
-						out << " ";
+						if (field.isPossibleMove(by, bx, y, x)) {
+							out << ".";
+						}
+						else {
+							out << " ";
+						}
 						break;
 					// interface cases
 					case Cell::Any:
-						out << ".";
+						out << "/";
 						break;
 					case Cell::Cwon:
 						out << "x";

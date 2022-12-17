@@ -34,9 +34,11 @@ public:
 	// TODO: possible move it to private and store a winner (if there is) in a variable inside of the class
 	Cell adjudicate();
 	// Will return a winner of exact (by, bx) board, or Cell::Any on draw, or Cell::Empty
-	Cell adjudicatedFor(size_t by, size_t bx);
+	Cell adjudicatedFor(const size_t by, const size_t bx);
 	// Will return true if the next move can be done at any empty board:
 	bool nextMoveIsAnywhere();
+	// Will return true if this move is possible but won't make a move on itself
+	bool isPossibleMove(const size_t by, const size_t bx, const size_t y, const size_t x);
 
 	Cell getTurn();
 	Coord getLastBoard();
@@ -56,5 +58,5 @@ public:
 	// Don't call this if you didn't use set previously
 	void setBoard(const size_t by, const size_t bx, Cell elem);
 
-	friend std::ostream& operator << (std::ostream& out, const Field& field);
+	friend std::ostream& operator << (std::ostream& out, Field& field);
 };

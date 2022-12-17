@@ -1,11 +1,12 @@
 #include "Eurist.h"
 #include <vector>
 
-Eurist::Eurist(size_t lines_, float k_, bool debug_)
+Eurist::Eurist(size_t lines_, float k_, bool debug_, bool tweak_)
 {
 	lines = lines_;
 	k = k_;
 	debug = debug_;
+	tweak = tweak_;
 	ratios = nullptr;
 	possible = nullptr;
 	count = nullptr;
@@ -41,8 +42,6 @@ std::vector <EuristMove> Eurist::eval(Field& field)
 		moves += totalPossibleMoves;
 
 		if (debug) {
-			std::cout << "Eurist: I've evaluated " << totalPossibleMoves << " legal moves, ";
-			std::cout << size_t(float(lines) * k / totalPossibleMoves) << " random lines for each;\n";
 			std::cout << "Eurist: Total random non-unique moves made: " << moves << ".\n";
 		}
 	}
@@ -51,8 +50,6 @@ std::vector <EuristMove> Eurist::eval(Field& field)
 		moves += count[lastMove.y][lastMove.x];
 
 		if (debug) {
-			std::cout << "Eurist: I've evaluated " << count[lastMove.y][lastMove.x] << " legal moves, ";
-			std::cout << lines / count[lastMove.y][lastMove.x] << " random lines for each;\n";
 			std::cout << "Eurist: Total random non-unique moves made: " << moves << ".\n";
 		}
 	}
@@ -103,12 +100,14 @@ void Eurist::eval(Field& field, const size_t by, const size_t bx, std::vector<Eu
 			size_t b2y = by;
 			size_t b2x = bx;
 			size_t move = i;
+			// tweak
+			if (tweak && field_.adjudicatedFor(possible[by][bx][i].y, possible[by][bx][i].x) != Cell::Empty && field_.adjudicate() == Cell::Empty) {
+				positionalMult[by][bx][i] = 0.88;
+			}
 
 			// Continue by playing random game 'til it's possible
 			Cell winner = field_.adjudicate();
 			while (winner == Cell::Empty) {
-				//std::cout << "old b2x, b2y:\t" << b2x << " " << b2y << "\n";
-
 				moves++;
 				if (field_.adjudicatedFor(b2y, b2x) != Cell::Empty) {
 					countAll_ -= count_[b2y][b2x];
@@ -118,26 +117,13 @@ void Eurist::eval(Field& field, const size_t by, const size_t bx, std::vector<Eu
 					std::swap(possible_[b2y][b2x][move], possible_[b2y][b2x][--count_[b2y][b2x]]);
 					countAll_--;
 				}
-
-				//std::cout << "new count_:\t";
-				//for (size_t k = 0; k < 3; k++) {
-				//	for (size_t l = 0; l < 3; l++) {
-				//		std::cout << count_[k][l] << "\t";
-				//	}
-				//}
-				//std::cout << "\n";
 		
 				b2y = field_.getLastMove().y;
 				b2x = field_.getLastMove().x;
-				
-				// std::cout << "new b2x, b2y:\t" << b2x << " " << b2y << "\n";
 
 				// Case: the next move must be done anywhere but the specific field
 				// Worth mentioning, this must work the same as: if (field_.nextMoveIsAnywhere()) condition
 				if (!count_[b2y][b2x]) {
-					//std::cout << countAll_ << "\n";
-					//std::cout << field_ << "\n";
-
 					move = rand() % countAll_;
 					bool dropped = false;
 					while (!dropped) {
@@ -153,16 +139,10 @@ void Eurist::eval(Field& field, const size_t by, const size_t bx, std::vector<Eu
 							}
 						}
 					}
-
-					// std::cout << "Deb:\t" << move << "\t" << b2x << " " << b2y << "\t" << possible_[b2y][b2x][move].x << " " << possible_[b2y][b2x][move].y << "\n\n";
 				}
 				else {
 					move = rand() % count_[b2y][b2x];
 				}
-
-				
-				//std::cout << "Move: " << move << "\n";
-				//std::cout << "\n\n";
 
 				field_.insert(b2y, b2x, possible_[b2y][b2x][move].y, possible_[b2y][b2x][move].x);
 				// while it isn't winning for someone or a dead draw
@@ -183,7 +163,7 @@ void Eurist::eval(Field& field, const size_t by, const size_t bx, std::vector<Eu
 	}
 
 	for (size_t i = 0; i < count[by][bx]; i++) {
-		euristMoves.push_back(EuristMove(by, bx, possible[by][bx][i].y, possible[by][bx][i].x, ratios[by][bx][possible[by][bx][i].y][possible[by][bx][i].x]));
+		euristMoves.push_back(EuristMove(by, bx, possible[by][bx][i].y, possible[by][bx][i].x, ratios[by][bx][possible[by][bx][i].y][possible[by][bx][i].x].getChance() * positionalMult[by][bx][i], i));
 	}
 }
 
@@ -226,6 +206,16 @@ void Eurist::clearArrays()
 		delete[] possible;
 		possible = nullptr;
 	}
+	if (positionalMult) {
+		for (size_t by = 0; by < 3; by++) {
+			for (size_t bx = 0; bx < 3; bx++) {
+				delete[] positionalMult[by][bx];
+			}
+			delete[] positionalMult[by];
+		}
+		delete[] positionalMult;
+		positionalMult = nullptr;
+	}
 }
 
 void Eurist::init(Field& field)
@@ -233,24 +223,34 @@ void Eurist::init(Field& field)
 	ratios = new Ratio***[3];
 	count = new size_t*[3];
 	possible = new Coord**[3];
+	positionalMult = new float**[3];
 	for (size_t by = 0; by < 3; by++) {
 		ratios[by] = new Ratio**[3];
 		count[by] = new size_t[3];
 		possible[by] = new Coord*[3];
+		positionalMult[by] = new float*[3];
 		for (size_t bx = 0; bx < 3; bx++) {
 			ratios[by][bx] = new Ratio*[3];
 			count[by][bx] = 0;
 			possible[by][bx] = new Coord[9];
+			positionalMult[by][bx] = new float[9];
 			for (size_t y = 0; y < 3; y++) {
 				ratios[by][bx][y] = new Ratio[3];
 				for (size_t x = 0; x < 3; x++) {
 					ratios[by][bx][y][x] = Ratio();
 					if (field.get(by, bx, y, x) == Cell::Empty) {
-						possible[by][bx][count[by][bx]++] = Coord(y, x);
+						possible[by][bx][count[by][bx]] = Coord(y, x);
+						positionalMult[by][bx][count[by][bx]] = 1;
+						count[by][bx]++;
 					}
 				}
 			}
 			countAll += count[by][bx];
 		}
 	}
+}
+
+size_t Eurist::getMoves()
+{
+	return moves;
 }
