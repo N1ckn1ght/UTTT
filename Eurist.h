@@ -17,6 +17,20 @@ private:
 	// Should it write debug information in std::cout?
 	bool debug;
 
+	// Eval addition on positional aspects of the game
+	bool zTweaks;
+	float positiveZBump;
+	float negativeZBump;
+	float positiveCTweak;
+	float negativeCTweak;
+	bool bTweaks;
+	float positiveBoardCentralDW;
+	float positiveBoardDiagDW;
+	float positiveBoardSideDW;
+	float negativeBoardCentralDW;
+	float negativeBoardDiagDW;
+	float negativeBoardSideDW;
+
 	// getChance() will return probability of winning on this move from 0 to 1
 	Ratio**** ratios;
 	// which moves are possible, basically contains array of Coord(y, x) on certain(by, bx) board
@@ -25,9 +39,8 @@ private:
 	size_t** count;
 	// general counter of possible moves (no matter which board)
 	size_t countAll;
-	// tweak
+	// arays of positional eval multipliers
 	float*** positionalMult;
-	bool tweak;
 
 	// General amount of moves has been made during the analysis
 	size_t moves;
@@ -40,9 +53,14 @@ public:
 	// lines_: how much analysis line shall be distributed upon a choice
 	// k     : multiplier of lines_ in case of any board first choice
 	// debug : this stands just for an additional output of how many moves algo did calculate
-	// tweak : enable or disable positional tweak for Eurist
-	//         keep in mind: without the tweak it'll be much weaker (not in case of PTTT tho)
-	Eurist(size_t lines_, float k_, bool debug_ = false, bool tweak_ = true);
+	// tweaks: eval modificator for certain positional aspects of the game
+	Eurist(size_t lines_, float k_, bool debug_ = false,
+		bool zTweaks_ = false,
+		float positiveZBump_ = 0, float negativeZBump_ = 0, 
+		float positiveCTweak_ = 0, float negativeCTweak_ = 0,
+		bool bTweaks_ = false,
+		float positiveBoardCentralDW_ = 0, float positiveBoardDiagDW_ = 0, float positiveBoardSideDW_ = 0,
+		float negativeBoardCentralDW_ = 0, float negativeBoardDiagDW_ = 0, float negativeBoardSideDW_ = 0);
 	~Eurist();
 	
 	// Will return AMOUNT of moves algorithm has been made;
