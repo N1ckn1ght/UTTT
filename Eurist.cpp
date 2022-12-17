@@ -1,18 +1,37 @@
 #include "Eurist.h"
 #include <vector>
 
-Eurist::Eurist(size_t lines_, float k_, bool debug_, float tweak_)
+Eurist::Eurist(size_t lines_, float k_, bool debug_, 
+	bool zTweaks_, 
+	float positiveZBump_, float negativeZBump_, float positiveCTweak_, float negativeCTweak_, 
+	bool bTweaks_, 
+	float positiveBoardCentralDW_, float positiveBoardDiagDW_, float positiveBoardSideDW_, 
+	float negativeBoardCentralDW_, float negativeBoardDiagDW_, float negativeBoardSideDW_)
 {
 	lines = lines_;
 	k = k_;
 	debug = debug_;
-	tweak = tweak_;
+
 	ratios = nullptr;
 	possible = nullptr;
 	count = nullptr;
 	positionalMult = nullptr;
 	countAll = 0;
 	moves = 0;
+
+	zTweaks = zTweaks_;
+	positiveZBump = positiveZBump_;
+	negativeZBump = negativeZBump_;
+	positiveCTweak = positiveCTweak_;
+	negativeCTweak = negativeCTweak_;
+
+	bTweaks = bTweaks_;
+	positiveBoardCentralDW = positiveBoardCentralDW_;
+	positiveBoardDiagDW = positiveBoardDiagDW_;
+	positiveBoardSideDW = positiveBoardSideDW_;
+	negativeBoardCentralDW = negativeBoardCentralDW_;
+	negativeBoardDiagDW = negativeBoardDiagDW_;
+	negativeBoardSideDW = negativeBoardSideDW_;
 }
 
 Eurist::~Eurist()
@@ -61,11 +80,12 @@ std::vector <EuristMove> Eurist::eval(Field& field)
 
 void Eurist::eval(Field& field, const size_t by, const size_t bx, std::vector<EuristMove>& euristMoves, size_t lines_, Cell side)
 {
+	// Make custom field
+	Field field_;
+
 	for (size_t i = 0; i < count[by][bx]; i++) {
 		for (size_t j = 0; j < lines_; j++) {
-
-			// Make field copy
-			Field field_;
+			// Set field copy
 			for (size_t iby = 0; iby < 3; iby++) {
 				for (size_t ibx = 0; ibx < 3; ibx++) {
 					for (size_t iy = 0; iy < 3; iy++) {
@@ -101,7 +121,6 @@ void Eurist::eval(Field& field, const size_t by, const size_t bx, std::vector<Eu
 			size_t b2y = by;
 			size_t b2x = bx;
 			size_t move = i;
-			// tweak
 
 			// Continue by playing random game 'til it's possible
 			Cell winner = field_.adjudicate();
@@ -124,15 +143,52 @@ void Eurist::eval(Field& field, const size_t by, const size_t bx, std::vector<Eu
 				if (!count_[b2y][b2x]) {
 					
 					// This is also where 'AnyMove' positional tweak comes into play
-					if (field_.adjudicatedFor(b2y, b2x) != Cell::Empty) {
+					if (zTweaks) {
 						if (field_.getTurn() == side) {
-							positionalMult[by][bx][i]++;
+							positionalMult[by][bx][i] += positiveZBump;
 						}
 						else {
-							positionalMult[by][bx][i]--;
+							positionalMult[by][bx][i] -= negativeZBump;
 						}
 					}
 
+					// Weights for certain boards
+					if (bTweaks) {
+						if (field_.adjudicatedFor(b2y, b2x) == side) {
+							if (b2y == b2x) {
+								if (b2y == 1) {
+									ratios[by][bx][possible[by][bx][i].y][possible[by][bx][i].x].addRatio(positiveBoardCentralDW, 1);
+								}
+								else {
+									ratios[by][bx][possible[by][bx][i].y][possible[by][bx][i].x].addRatio(positiveBoardDiagDW, 1);
+								}
+							}
+							else if ((b2y == 0 && b2x == 2) || (b2y == 2 && b2x == 0)) {
+								ratios[by][bx][possible[by][bx][i].y][possible[by][bx][i].x].addRatio(positiveBoardDiagDW, 1);
+							}
+							else {
+								ratios[by][bx][possible[by][bx][i].y][possible[by][bx][i].x].addRatio(positiveBoardSideDW, 1);
+							}
+						}
+						else if (field_.adjudicatedFor(b2y, b2x) == nextCell(side)) {
+							if (b2y == b2x) {
+								if (b2y == 1) {
+									ratios[by][bx][possible[by][bx][i].y][possible[by][bx][i].x].addRatio(negativeBoardCentralDW, 1);
+								}
+								else {
+									ratios[by][bx][possible[by][bx][i].y][possible[by][bx][i].x].addRatio(negativeBoardDiagDW, 1);
+								}
+							}
+							else if ((b2y == 0 && b2x == 2) || (b2y == 2 && b2x == 0)) {
+								ratios[by][bx][possible[by][bx][i].y][possible[by][bx][i].x].addRatio(negativeBoardDiagDW, 1);
+							}
+							else {
+								ratios[by][bx][possible[by][bx][i].y][possible[by][bx][i].x].addRatio(negativeBoardSideDW, 1);
+							}
+						}
+					}
+
+					// Finally, make a move from all possible random moves
 					move = rand() % countAll_;
 					bool dropped = false;
 					while (!dropped) {
@@ -172,22 +228,24 @@ void Eurist::eval(Field& field, const size_t by, const size_t bx, std::vector<Eu
 	}
 
 	for (size_t i = 0; i < count[by][bx]; i++) {
-		float chance = ratios[by][bx][possible[by][bx][i].y][possible[by][bx][i].x].getChance();
-		if (tweak) {
-			std::cout << "\t##, positionalMult[" << by << "][" << bx << "][" << i << "] = " << positionalMult[by][bx][i] << "\n";
-			std::cout << "\t\tthe move is (bx, by, x, y): " << bx << " " << by << " " << possible[by][bx][i].x << " " << possible[by][bx][i].y << "\n";
-			std::cout << "\t\tinitial chance is: " << chance << "\n";
-			for (size_t i = 0; i < positionalMult[by][bx][i]; i++) {
-				chance += (1 - chance) * tweak;
-				std::cout << "\t\t\tPlayed out 1 cycle\n";
+		size_t y = possible[by][bx][i].y;
+		size_t x = possible[by][bx][i].x;
+		float chance = ratios[by][bx][y][x].getChance();
+
+		if (zTweaks) {
+			if (positiveCTweak) {
+				for (size_t j = 0; j < positionalMult[by][bx][i]; j++) {
+					chance += (1 - chance) * positiveCTweak;
+				}
 			}
-			for (size_t i = 0; i < -positionalMult[by][bx][i]; i++) {
-				chance -= chance * tweak;
-				std::cout << "\t\t\tPlayed out 2 cycle\n";
+			if (negativeCTweak) {
+				for (size_t j = 0; j < -positionalMult[by][bx][i]; j++) {
+					chance -= chance * negativeCTweak;
+				}
 			}
-			std::cout << "\t\tnew chance is: " << chance << "\n";
 		}
-		euristMoves.push_back(EuristMove(by, bx, possible[by][bx][i].y, possible[by][bx][i].x, chance, i));
+
+		euristMoves.push_back(EuristMove(by, bx, y, x, chance, i));
 	}
 }
 

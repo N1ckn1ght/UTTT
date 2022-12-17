@@ -9,6 +9,15 @@
 
 using namespace std;
 
+Eurist getEurist() {
+	size_t lines;
+	float k, pzb, nzb, pct, nct, pbcd, pbdd, pbsd, nbcd, nbdd, nbsd;
+	bool debug, zTweaks, bTweaks;
+	cout << "Input (unsigned int) lines, (float) k, (bool) debug, (bool) zTweaks, (float) positiveZBump, (float) negativeZBump, (float) positiveCTweak, (float) negativeCTweak, (bool) bTweaks, (float) positiveBoardCentralDW, (float) positiveBoardDiagDW, (float) positiveBoardSideDW, (float) negativeBoardCentralDW, (float) negativeBoardDiagDW, (float) negativeBoardSideDW:\n";
+	cin >> lines >> k >> debug >> zTweaks >> pzb >> nzb >> pct >> nct >> bTweaks >> pbcd >> pbdd >> pbsd >> nbcd >> nbdd >> nbsd;
+	return Eurist(lines, k, debug, zTweaks, pzb, nzb, pct, nct, bTweaks, pbcd, pbdd, pbsd, nbcd, nbdd, nbsd);
+}
+
 string getSide(Cell side) {
 	if (side == Cell::Cross) {
 		return "CROSS";
@@ -157,9 +166,8 @@ void playerVsBot(Field& field, Eurist& eurist, bool playerMovesFirst) {
 	}
 }
 
-void botVsBot(Field& field, Eurist& eurist1, Eurist& eurist2)
+void botVsBot(Field& field, Eurist& eurist1, Eurist& eurist2, bool eurist1First = true)
 {
-	bool cross = true;
 	while (true) {
 		if (field.nextMoveIsAnywhere()) {
 			cout << field << "\n" << getSide(field.getTurn()) << " turn on ANY board!\n";
@@ -168,7 +176,7 @@ void botVsBot(Field& field, Eurist& eurist1, Eurist& eurist2)
 			cout << field << "\n" << getSide(field.getTurn()) << " turn on (" << field.getLastMove().x + 1 << ", " << field.getLastMove().y + 1 << ") board.\n";
 		}
 
-		if (cross) {
+		if (eurist1First) {
 			printEuristAnalysis(field, eurist1, true);
 		}
 
@@ -189,20 +197,41 @@ void botVsBot(Field& field, Eurist& eurist1, Eurist& eurist2)
 			cout << field << "Round draw. Fantastic!!\n";
 			return;
 		}
-		cross = !cross;
+		eurist1First = !eurist1First;
 	}
 }
 
 int main(int argc, wchar_t* argv[]) {
 	srand(time(0));
 	Field field;
-	Eurist defaultEurist(18000, 4, 1, 1);
+
+	//zTweaks + bTweaks, conf1
+	// Eurist customEurist1(13500, 3.75, 1, 1, 0, 1, 0, 0.00001, 1, 0.625, 0.59375, 0.5625, 0.4375, 0.40625, 0.375);
+	//zTweaks
+	// Eurist customEurist2(13500, 3.75, 1, 1, 1, 1, 0, 0.001, 0);
+	//Vanilla
+	// Eurist customEurist3(13500, 3.75, 1);
+	//bTweaks
+	// Eurist customEurist4(13500, 3.75, 1, 0, 0, 0, 0, 0, 1, 0.625, 0.59375, 0.5625, 0.4375, 0.40625, 0.375);
+	//zTweaks + bTweaks, conf0
+	// Eurist customEurist5(13500, 3.75, 1, 1, 1, 1, 0, 0.001, 1, 0.625, 0.59375, 0.5625, 0.4375, 0.40625, 0.375);
+	//zTweaks 0.002
+	// Eurist customEurist6(13500, 3.75, 1, 1, 1, 1, 0, 0.002, 0);
+	//zTweaks +fb
+	// Eurist customEurist7(10000, 8, 1, 1, 1, 1, 0, 0.001, 0);
+	//zTweaks low precision
+	// Eurist customEurist8(1350, 3.75, 1, 1, 1, 1, 0, 0.001, 0);
+
+	Eurist defaultEurist(21000, 4.2, 1, 1, 1, 1, 0, 0.001, 0);
 
 	char input = '0';
 	do {
-		cout << "Please, select a gamemode\n\n1 - Two players\n2 - Two players with Eurist analysis\n";
-		cout << "3 - Play Vs Eurist Bot as CROSS\n4 - Play Vs Eurist Bot as NULLS\n";
-		cout << "5 - Play Vs Eurist Bot as CROSS with custom params\n6 - Play Vs Eurist Bot as NULLS with custom params\n";
+		cout << "Please, select a gamemode\n\n";
+		cout << "1 - Two players\n2 - Two players with Eurist analysis\n";
+		cout << "3 - Play Vs Eurist Bot as CROSS\n";
+		cout << "4 - Play Vs Eurist Bot as NULLS\n";
+		cout << "5 - Play Vs Eurist Bot as CROSS with custom params\n";
+		cout << "6 - Play Vs Eurist Bot as NULLS with custom params\n";
 		cout << "7 - Watch Eurist Bot vs Eurist Bot game with different params!\n\n";
 		cin >> input;
 		cout << "\n";
@@ -213,15 +242,7 @@ int main(int argc, wchar_t* argv[]) {
 		playerVsPlayer(field, defaultEurist, false);
 	}
 	else if (input == '2') {
-		size_t lines;
-		float k, tweak;
-		bool debug;
-		cout << "Input (unsigned int) lines, (float) k, (float) k2, (bool) debug, (bool) tweak:\n";
-		cout << "This is basically the strength of the analysis.\n";
-		cout << "Recommended params for now: 18000 4 0 1\n\n";
-		cin >> lines >> k >> debug >> tweak;
-		Eurist customEurist(lines, k, debug, tweak);
-		playerVsPlayer(field, customEurist, true);
+		playerVsPlayer(field, defaultEurist, true);
 	}
 	else if (input == '3') {
 		playerVsBot(field, defaultEurist, true);
@@ -230,44 +251,17 @@ int main(int argc, wchar_t* argv[]) {
 		playerVsBot(field, defaultEurist, false);
 	}
 	else if (input == '5') {
-		size_t lines;
-		float k, tweak;
-		bool debug;
-		cout << "Input (unsigned int) lines, (float) k, (float) k2, (bool) debug, (bool) tweak:\n";
-		cout << "This is basically the strength of the analysis.\n";
-		cout << "Recommended params for now: 18000 4 0 1\n\n";
-		cin >> lines >> k >> debug >> tweak;
-		Eurist customEurist(lines, k, debug, tweak);
+		Eurist customEurist = getEurist();
 		playerVsBot(field, customEurist, true);
 	}
 	else if (input == '6') {
-		size_t lines;
-		float k, tweak;
-		bool debug;
-		cout << "Input (unsigned int) lines, (float) k, (float) k2, (bool) debug, (bool) tweak:\n";
-		cout << "This is basically the strength of the analysis.\n";
-		cout << "Recommended params for now: 18000 4 0 1\n\n";
-		cin >> lines >> k >> debug >> tweak;
-		Eurist customEurist(lines, k, debug, tweak);
+		Eurist customEurist = getEurist();
 		playerVsBot(field, customEurist, false);
 	}
 	else if (input == '7') {
-		size_t lines;
-		float k, tweak;
-		bool debug;
-		cout << "== EURIST BOT PARAMS AS CROSS ==\n";
-		cout << "Input (unsigned int) lines, (float) k, (float) k2, (bool) debug, (bool) tweak:\n";
-		cout << "This is basically the strength of the analysis.\n";
-		cout << "Recommended params for now: 18000 4 0 1\n\n";
-		cin >> lines >> k >> debug >> tweak;
-		Eurist customEurist1(lines, k, debug, tweak);
-		cout << "\n== EURIST BOT PARAMS AS NULLS ==\n";
-		cout << "Input (unsigned int) lines, (float) k, (float) k2, (bool) debug, (bool) tweak:\n";
-		cout << "This is basically the strength of the analysis.\n";
-		cout << "Recommended params for now: 18000 4 0 1\n\n";
-		cin >> lines >> k >> debug >> tweak;
-		Eurist customEurist2(lines, k, debug, tweak);
-		botVsBot(field, customEurist1, customEurist2);
+		Eurist customEurist1 = getEurist();
+		Eurist customEurist2 = getEurist();
+		botVsBot(field, customEurist1, customEurist2, true);
 	}
 
 	cout << "\nInput any symbol to kill this app.\n";

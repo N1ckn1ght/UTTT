@@ -27,7 +27,7 @@ void Ratio::addRatio(Ratio& ratio)
 	amount += ratio.getAmount();
 }
 
-void Ratio::addRatio(const float sum_, const size_t amount_)
+void Ratio::addRatio(const float sum_, const float amount_)
 {
 	sum += sum_;
 	amount += amount_;
@@ -41,7 +41,7 @@ float Ratio::getChance()
 	return 0.5;
 }
 
-size_t Ratio::getAmount()
+float Ratio::getAmount()
 {
 	return amount;
 }

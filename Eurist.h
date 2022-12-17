@@ -16,8 +16,20 @@ private:
 	float k;
 	// Should it write debug information in std::cout?
 	bool debug;
-	// Eval addition on positional threats
-	float tweak;
+
+	// Eval addition on positional aspects of the game
+	bool zTweaks;
+	float positiveZBump;
+	float negativeZBump;
+	float positiveCTweak;
+	float negativeCTweak;
+	bool bTweaks;
+	float positiveBoardCentralDW;
+	float positiveBoardDiagDW;
+	float positiveBoardSideDW;
+	float negativeBoardCentralDW;
+	float negativeBoardDiagDW;
+	float negativeBoardSideDW;
 
 	// getChance() will return probability of winning on this move from 0 to 1
 	Ratio**** ratios;
@@ -41,9 +53,14 @@ public:
 	// lines_: how much analysis line shall be distributed upon a choice
 	// k     : multiplier of lines_ in case of any board first choice
 	// debug : this stands just for an additional output of how many moves algo did calculate
-	// tweak : eval modificator for certain positional threats
-	//         when set to 0 it won't make a difference, recommended must be in (0; 1)
-	Eurist(size_t lines_, float k_, bool debug_ = false, float tweak_ = 0);
+	// tweaks: eval modificator for certain positional aspects of the game
+	Eurist(size_t lines_, float k_, bool debug_ = false,
+		bool zTweaks_ = false,
+		float positiveZBump_ = 0, float negativeZBump_ = 0, 
+		float positiveCTweak_ = 0, float negativeCTweak_ = 0,
+		bool bTweaks_ = false,
+		float positiveBoardCentralDW_ = 0, float positiveBoardDiagDW_ = 0, float positiveBoardSideDW_ = 0,
+		float negativeBoardCentralDW_ = 0, float negativeBoardDiagDW_ = 0, float negativeBoardSideDW_ = 0);
 	~Eurist();
 	
 	// Will return AMOUNT of moves algorithm has been made;
