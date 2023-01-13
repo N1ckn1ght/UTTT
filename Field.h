@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <stack>
 #include "Cell.h"
 #include "Coord.h"
 
@@ -7,11 +8,11 @@ class Field
 {
 private:
 	// Entire field of 3x3 boards of 3x3 cells (by, bx, y, x)
-	Cell**** ptr;
-	// Which turn it is
-	Cell turn;
-	// Last move by (by, bx)
-	Coord lastBoard;
+	// unsigned char**** ptr;
+	// Which turn it is now
+	unsigned char turn;
+	// Next board to move
+	
 	// Last move by (y, x)
 	Coord lastMove;
 	// Adjudicated boards
@@ -21,6 +22,8 @@ private:
 	void adjudicateFor(size_t by, size_t bx);
 	// Used for printing already adjudicated boards, also prevents from moving on them
 	void fill(size_t by, size_t bx, Cell elem);
+
+	std::stack <unsigned char> history;
 public:
 	Field();
 	~Field();
