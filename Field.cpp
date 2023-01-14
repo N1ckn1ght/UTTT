@@ -2,8 +2,13 @@
 
 Field::Field()
 {
-    board = GlobalBoard();
+    board = new GlobalBoard;
     turn = Cell::Cross;
+}
+
+Field::~Field()
+{
+    delete board;
 }
 
 void Field::move(const GlobalCoord &coord)
@@ -18,78 +23,82 @@ void Field::move(const Coord &global, Coord &local)
 
 void Field::move(size_t by, size_t bx, size_t y, size_t x)
 {
-    board.set(by, bx, y, x, turn);
+    board->set(by, bx, y, x, turn);
     turn = nextCell(turn);
 }
 
 void Field::revert()
 {
-    board.revert();
+    board->revert();
     turn = nextCell(turn);
 }
 
-const bool Field::isLegalMove(const GlobalCoord &coord)
+bool Field::isLegalMove(const GlobalCoord &coord) const
 {
     return isLegalMove(coord.by, coord.bx, coord.y, coord.x);
 }
 
-const bool Field::isLegalMove(const Coord &global, const Coord &local)
+bool Field::isLegalMove(const Coord &global, const Coord &local) const
 {
     return isLegalMove(global.y, global.x, local.y, local.x);
 }
 
-const bool Field::isLegalMove(size_t by, size_t bx, size_t y, size_t x)
+bool Field::isLegalMove(size_t by, size_t bx, size_t y, size_t x) const
 {
     if (by > 2 || bx > 2 || y > 2 || x > 2) {
         return false;
     }
-    if (board.getNextBoard().y != -1 && (board.getNextBoard().y != by || board.getNextBoard().x != bx)) {
+    Coord next = board->getNextBoard();
+    if (next.y != -1 && (next.y != by || next.x != bx)) {
         return false;
     }
-    if (board.get(by, bx, y, x) != Cell::Empty) {
+    if (board->getWinner(by, bx) != Cell::Empty) {
+        return false;
+    }
+    if (board->get(by, bx, y, x) != Cell::Empty) {
         return false;
     }
     return true;
 }
 
-const Cell Field::get(const GlobalCoord &coord)
+Cell Field::get(const GlobalCoord &coord) const
 {
     return get(coord.by, coord.bx, coord.y, coord.x);
 }
 
-const Cell Field::get(const Coord &global, const Coord &local)
+Cell Field::get(const Coord &global, const Coord &local) const
 {
     return get(global.y, global.x, local.y, local.x);
 }
 
-const Cell Field::get(size_t by, size_t bx, size_t y, size_t x)
+Cell Field::get(size_t by, size_t bx, size_t y, size_t x) const
 {
-    return board.get(by, bx, y, x);
+    return board->get(by, bx, y, x);
 }
 
-const Cell Field::getTurn()
+Cell Field::getTurn() const
 {
     return turn;
 }
 
-const Cell Field::getWinner()
+Cell Field::getWinner() const
 {
-    return board.getWinner();
+    return board->getWinner();
 }
 
-const Coord Field::getNextBoard()
+Coord Field::getNextBoard() const
 {
-    return board.getNextBoard();
+    return board->getNextBoard();
 }
 
-const std::vector<GlobalCoord> Field::getEmptyCells()
+std::vector<GlobalCoord> Field::getEmptyCells() const
 {
     std::vector <GlobalCoord> moves;
     for (size_t by = 0; by < 3; by++) {
         for (size_t bx = 0; bx < 3; bx++) {
             for (size_t y = 0; y < 3; y++) {
                 for (size_t x = 0; x < 3; x++) {
-                    if (board.get(by, bx, y, x) == Cell::Empty) {
+                    if (board->get(by, bx, y, x) == Cell::Empty) {
                         moves.push_back(GlobalCoord(by, bx, y, x));
                     }
                 }
@@ -99,17 +108,17 @@ const std::vector<GlobalCoord> Field::getEmptyCells()
     return moves;
 }
 
-const std::vector<GlobalCoord> Field::getValidMoves()
+std::vector<GlobalCoord> Field::getValidMoves() const
 {
-    size_t by = board.getNextBoard().y;
-    size_t bx = board.getNextBoard().x;
+    size_t by = board->getNextBoard().y;
+    size_t bx = board->getNextBoard().x;
     if (by == -1) {
         return getEmptyCells();
     }
     std::vector <GlobalCoord> moves;
     for (size_t y = 0; y < 3; y++) {
         for (size_t x = 0; x < 3; x++) {
-            if (board.get(by, bx, y, x) == Cell::Empty) {
+            if (board->get(by, bx, y, x) == Cell::Empty) {
                 moves.push_back(GlobalCoord(by, bx, y, x));
             }
         }
@@ -121,26 +130,20 @@ std::ostream &operator<<(std::ostream &out, Field &field)
 {
     Coord nextBoard = field.getNextBoard();
 
-    out << "\nby y\n    ------+-----+------\n";
+    out << "\n------+-----+------\n";
     for (size_t by = 0; by < 3; by++) {
-        if (by == 1) {
-            out << " " << (by + 1) << " ";
-        }
-        else {
-            out << "   ";
-        }
         for (size_t y = 0; y < 3; y++) {
-            out << (y + 1) << "|";
+            out << "|";
             for (size_t bx = 0; bx < 3; bx++) {
-                switch (field.getWinner()) {
+                switch (field.board->getWinner(by, bx)) {
                     case Cell::Cross:
-                        out << "x x x}";
+                        out << "x x x|";
                         break;
                     case Cell::Null:
-                        out << "o o o}";
+                        out << "o o o|";
                         break;
                     case Cell::Any:
-                        out << "/ / /}";
+                        out << "/ / /|";
                         break;
                     default:
                         char cell = ' ';
@@ -154,10 +157,10 @@ std::ostream &operator<<(std::ostream &out, Field &field)
                             else {
                                 switch (field.get(by, bx, y, x)) {
                                     case Cell::Cross:
-                                        out << "x";
+                                        out << "X";
                                         break;
                                     case Cell::Null:
-                                        out << "o";
+                                        out << "O";
                                         break;
                                     default:
                                         throw GameException();
@@ -173,9 +176,18 @@ std::ostream &operator<<(std::ostream &out, Field &field)
                         }
                 }
             }
+            out << (y + 1);
+            if (y == 1) {
+                out << " " << (by + 1);
+            }
+            out << "\n";
         }
-        out << "    ------+-----+------\n";
+        out << "------+-----+------";
+        if (by == 2) {
+            out << "y by";
+        }
+        out << "\n";
     }
-    out << "     1 2 3 1 2 3 1 2 3 x\n 	  1     2     3    bx\n\n";
+    out << " 1 2 3 1 2 3 1 2 3 x\n   1     2     3   bx\n\n";
     return out;
 }

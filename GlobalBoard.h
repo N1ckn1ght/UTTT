@@ -4,7 +4,7 @@
 class GlobalBoard
 {
 private:
-    LocalBoard** field;
+    LocalBoard*** field;
     Cell winner;
     std::stack <Coord> history;
 
@@ -16,8 +16,9 @@ public:
     // Warning: there are no safety checks in methods
     void set(const size_t by, const size_t bx, const size_t y, const size_t x, const Cell& cell);
     void revert();
-    const Cell get(const size_t by, const size_t bx, const size_t y, const size_t x);
-    const Cell getWinner();
+    Cell get(const size_t by, const size_t bx, const size_t y, const size_t x) const;
+    Cell getWinner() const;
+    Cell getWinner(const size_t by, const size_t bx) const;
     // Will return Coord(-1, -1) if next board is any
-    const Coord getNextBoard();
+    Coord getNextBoard() const;
 };

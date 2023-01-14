@@ -35,17 +35,17 @@ void LocalBoard::revert()
     history.pop();
 }
 
-const Cell LocalBoard::get(const size_t y, const size_t x)
+Cell LocalBoard::get(const size_t y, const size_t x) const
 {
     return field[y][x];
 }
 
-const Cell LocalBoard::getWinner()
+Cell LocalBoard::getWinner() const
 {
     return winner;
 }
 
-const Coord LocalBoard::getLastMove()
+Coord LocalBoard::getLastMove() const
 {
     return history.top();
 }

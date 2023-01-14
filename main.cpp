@@ -1,5 +1,6 @@
 #include "Field.h"
 #include <cstdlib>
+#include <ctime>
 
 using namespace std;
 
@@ -14,6 +15,7 @@ char getSide(Cell cell) {
 		default:
 			break;
 	}
+	return 0;
 }
 
 void playerVsPlayer(Field& field, bool analyze) {
@@ -27,21 +29,16 @@ void playerVsPlayer(Field& field, bool analyze) {
 
 		success = false;
 		if (field.getNextBoard().y == -1) {
-			cout << field << getSide(field.getTurn()) << "turn on ANY board!\n";
-			do {
-				cout << "Input: bx by x y\n";
-				cin >> bx, by, x, y;
-				success = field.isLegalMove(by, bx, y, x);
-			} while (!success);
+			cout << field << getSide(field.getTurn()) << " turn on ANY board!\n";
 		} 
 		else {
-			cout << field << getSide(field.getTurn()) << "turn on (" << (field.getNextBoard().x) + 1 << "," << (field.getNextBoard().y) + 1 << ") board!\n";
-			do {
-				cout << "Input: bx by x y\n";
-				cin >> bx, by, x, y;
-				success = field.isLegalMove(by, bx, y, x);
-			} while (!success);
+			cout << field << getSide(field.getTurn()) << " turn on (" << (field.getNextBoard().x) + 1 << " ," << (field.getNextBoard().y) + 1 << ") board!\n";
 		}
+		do {
+			cout << "Input: bx by x y\n";
+			cin >> bx >> by >> x >> y;
+			success = field.isLegalMove(--by, --bx, --y, --x);
+		} while (!success);
 
 		field.move(by, bx, y, x);
 		switch (field.getWinner()) {
@@ -60,7 +57,7 @@ void playerVsPlayer(Field& field, bool analyze) {
 	}
 }
 
-int main(int argc, wchar_t* argv[]) {
+int main(int argc, char* argv[]) {
 	srand(time(0));
 	Field field;
 
@@ -99,7 +96,7 @@ int main(int argc, wchar_t* argv[]) {
 			break;
 	}
 
-	cout << "Input any symbol to kill this app.";
+	cout << "Press ENTER to kill this app.\n";
 	cin.get();
 	cin.get();
 	return 0;

@@ -18,7 +18,7 @@ public:
     // Warning: there are no safety checks in methods
     void set(const size_t y, const size_t x, const Cell& cell); 
     void revert();
-    const Cell get(const size_t y, const size_t x);
-    const Cell getWinner();
-    const Coord getLastMove();
+    Cell get(const size_t y, const size_t x) const;
+    Cell getWinner() const;
+    Coord getLastMove() const;
 };
