@@ -116,3 +116,66 @@ const std::vector<GlobalCoord> Field::getValidMoves()
     }
     return moves;
 }
+
+std::ostream &operator<<(std::ostream &out, Field &field)
+{
+    Coord nextBoard = field.getNextBoard();
+
+    out << "\nby y\n    ------+-----+------\n";
+    for (size_t by = 0; by < 3; by++) {
+        if (by == 1) {
+            out << " " << (by + 1) << " ";
+        }
+        else {
+            out << "   ";
+        }
+        for (size_t y = 0; y < 3; y++) {
+            out << (y + 1) << "|";
+            for (size_t bx = 0; bx < 3; bx++) {
+                switch (field.getWinner()) {
+                    case Cell::Cross:
+                        out << "x x x}";
+                        break;
+                    case Cell::Null:
+                        out << "o o o}";
+                        break;
+                    case Cell::Any:
+                        out << "/ / /}";
+                        break;
+                    default:
+                        char cell = ' ';
+                        if (nextBoard.y == -1 || nextBoard == Coord(by, bx)) {
+                            cell = '.';
+                        }
+                        for (size_t x = 0; x < 3; x++) {
+                            if (field.get(by, bx, y, x) == Cell::Empty) {
+                                out << cell;
+                            } 
+                            else {
+                                switch (field.get(by, bx, y, x)) {
+                                    case Cell::Cross:
+                                        out << "x";
+                                        break;
+                                    case Cell::Null:
+                                        out << "o";
+                                        break;
+                                    default:
+                                        throw GameException();
+                                        break;
+                                }
+                            }
+                            if (x < 2) {
+                                out << " ";
+                            }
+                            else {
+                                out << "|";
+                            }
+                        }
+                }
+            }
+        }
+        out << "    ------+-----+------\n";
+    }
+    out << "     1 2 3 1 2 3 1 2 3 x\n 	  1     2     3    bx\n\n";
+    return out;
+}

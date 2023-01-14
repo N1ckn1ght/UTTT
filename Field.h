@@ -3,6 +3,8 @@
 #include <vector>
 #include "GlobalBoard.h"
 
+class GameException {};
+
 class Field
 {
 private:

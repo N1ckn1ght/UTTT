@@ -23,6 +23,7 @@ LocalBoard::~LocalBoard()
 void LocalBoard::set(const size_t y, const size_t x, const Cell& cell)
 {
     field[y][x] = cell;
+    check();
     history.push(Coord(y, x));
 }
 
