@@ -20,12 +20,7 @@ GlobalBoard::~GlobalBoard()
     delete[] field;
 }
 
-void GlobalBoard::set(Coord global, Coord local, Cell cell) {
-    field[global.y][global.x].set(local, cell);
-    history.push(global);
-}
-
-void GlobalBoard::set(size_t by, size_t bx, size_t y, size_t x, Cell cell)
+void GlobalBoard::set(const size_t by, const size_t bx, const size_t y, const size_t x, const Cell& cell)
 {
     field[by][bx].set(y, x, cell);
     history.push(Coord(by, bx));
@@ -39,22 +34,17 @@ void GlobalBoard::revert()
     history.pop();
 }
 
-Cell GlobalBoard::get(Coord global, Coord local)
-{
-    return field[global.y][global.x].get(local);
-}
-
-Cell GlobalBoard::get(size_t by, size_t bx, size_t y, size_t x)
+const Cell GlobalBoard::get(const size_t by, const size_t bx, const size_t y, const size_t x)
 {
     return field[by][bx].get(y, x);
 }
 
-Cell GlobalBoard::getWinner()
+const Cell GlobalBoard::getWinner()
 {
     return winner;
 }
 
-Coord GlobalBoard::nextBoard()
+const Coord GlobalBoard::getNextBoard()
 {
     if (history.size() > 0) {
         Coord lastBoard = history.top();

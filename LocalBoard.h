@@ -16,11 +16,9 @@ public:
     ~LocalBoard();
     
     // Warning: there are no safety checks in methods
-    void set(Coord coord, Cell cell);
-    void set(size_t y, size_t x, Cell cell); 
+    void set(const size_t y, const size_t x, const Cell& cell); 
     void revert();
-    Cell get(Coord coord);
-    Cell get(size_t y, size_t x);
-    Cell getWinner();
-    Coord getLastMove();
+    const Cell get(const size_t y, const size_t x);
+    const Cell getWinner();
+    const Coord getLastMove();
 };

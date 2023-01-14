@@ -1,4 +1,5 @@
 #pragma once
+#include "GlobalCoord.h"
 
 class Coord {
 public:

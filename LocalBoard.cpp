@@ -20,13 +20,7 @@ LocalBoard::~LocalBoard()
     delete[] field;
 }
 
-void LocalBoard::set(Coord coord, Cell cell)
-{
-    field[coord.y][coord.x] = cell;
-    history.push(coord);
-}
-
-void LocalBoard::set(size_t y, size_t x, Cell cell)
+void LocalBoard::set(const size_t y, const size_t x, const Cell& cell)
 {
     field[y][x] = cell;
     history.push(Coord(y, x));
@@ -40,22 +34,17 @@ void LocalBoard::revert()
     history.pop();
 }
 
-Cell LocalBoard::get(Coord coord)
-{
-    return field[coord.y][coord.x];
-}
-
-Cell LocalBoard::get(size_t y, size_t x)
+const Cell LocalBoard::get(const size_t y, const size_t x)
 {
     return field[y][x];
 }
 
-Cell LocalBoard::getWinner()
+const Cell LocalBoard::getWinner()
 {
     return winner;
 }
 
-Coord LocalBoard::getLastMove()
+const Coord LocalBoard::getLastMove()
 {
     return history.top();
 }

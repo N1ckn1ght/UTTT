@@ -1,7 +1,4 @@
 #pragma once
-#include <stack>
-#include "Cell.h"
-#include "Coord.h"
 #include "LocalBoard.h"
 
 class GlobalBoard
@@ -17,13 +14,10 @@ public:
     ~GlobalBoard();
 
     // Warning: there are no safety checks in methods
-    void set(Coord global, Coord local, Cell cell);
-    void set(size_t by, size_t bx, size_t y, size_t x, Cell cell); 
+    void set(const size_t by, const size_t bx, const size_t y, const size_t x, const Cell& cell);
     void revert();
-    Cell get(Coord global, Coord local);
-    Cell get(size_t by, size_t bx, size_t y, size_t x);
-    Cell getWinner();
-
+    const Cell get(const size_t by, const size_t bx, const size_t y, const size_t x);
+    const Cell getWinner();
     // Will return Coord(-1, -1) if next board is any
-    Coord nextBoard();
+    const Coord getNextBoard();
 };
