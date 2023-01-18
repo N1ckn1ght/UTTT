@@ -29,8 +29,10 @@ public:
     Cell getWinner() const;
 	// Will return Coord(-1, -1) if next board is any
     Coord getNextBoard() const;
-	// Heavy on time, better to avoid overusing these in engine logic
-	std::vector <GlobalCoord> getEmptyCells() const;
+	// Heavy on time and memory, better to avoid overusing these in engine logic:
+	// getEmptyCells will return valid moves by (y, x) on every board, where by = i / 3, bx = i % 3
+	std::vector <std::vector <Coord>> getEmptyCells() const;
+	// getValidMoves will return valid moves by full coordinate in a single vector
 	std::vector <GlobalCoord> getValidMoves() const;
 
 	friend std::ostream& operator << (std::ostream& out, Field& field);

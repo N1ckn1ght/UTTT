@@ -91,15 +91,15 @@ Coord Field::getNextBoard() const
     return board->getNextBoard();
 }
 
-std::vector<GlobalCoord> Field::getEmptyCells() const
+std::vector<std::vector<Coord>> Field::getEmptyCells() const
 {
-    std::vector <GlobalCoord> moves;
+    std::vector <std::vector <Coord>> moves(9, std::vector <Coord>());
     for (size_t by = 0; by < 3; by++) {
         for (size_t bx = 0; bx < 3; bx++) {
             for (size_t y = 0; y < 3; y++) {
                 for (size_t x = 0; x < 3; x++) {
                     if (board->get(by, bx, y, x) == Cell::Empty) {
-                        moves.push_back(GlobalCoord(by, bx, y, x));
+                        moves[by * 3 + bx].push_back(Coord(y, x));
                     }
                 }
             }
@@ -110,16 +110,28 @@ std::vector<GlobalCoord> Field::getEmptyCells() const
 
 std::vector<GlobalCoord> Field::getValidMoves() const
 {
+    std::vector <GlobalCoord> moves;
     size_t by = board->getNextBoard().y;
     size_t bx = board->getNextBoard().x;
     if (by == -1) {
-        return getEmptyCells();
+        for (size_t by = 0; by < 3; by++) {
+            for (size_t bx = 0; bx < 3; bx++) {
+                for (size_t y = 0; y < 3; y++) {
+                    for (size_t x = 0; x < 3; x++) {
+                        if (board->get(by, bx, y, x) == Cell::Empty) {
+                            moves.push_back(GlobalCoord(by, bx, y, x));
+                        }
+                    }
+                }
+            }
+        }
     }
-    std::vector <GlobalCoord> moves;
-    for (size_t y = 0; y < 3; y++) {
-        for (size_t x = 0; x < 3; x++) {
-            if (board->get(by, bx, y, x) == Cell::Empty) {
-                moves.push_back(GlobalCoord(by, bx, y, x));
+    else {
+        for (size_t y = 0; y < 3; y++) {
+            for (size_t x = 0; x < 3; x++) {
+                if (board->get(by, bx, y, x) == Cell::Empty) {
+                    moves.push_back(GlobalCoord(by, bx, y, x));
+                }
             }
         }
     }
