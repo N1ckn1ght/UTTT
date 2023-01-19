@@ -6,19 +6,20 @@ EdgeBot::EdgeBot()
 
 	// Points for a cell on a local board
 	localPts = std::vector <std::vector <double>>({ {3, 2, 3}, {2, 4, 2}, {3, 2, 3} });
-	// Multiplier of points for a cell on a local board on the global board
-	globalPts = std::vector <std::vector <double>>({ {1.5, 1, 1.5}, {1, 2, 1}, {1.5, 1, 1.5} });
+	// Points for a cell on a local board on the global board
+	globalPts = std::vector <std::vector <double>>({ {3, 2, 3}, {2, 4, 2}, {3, 2, 3} });
 	// Points for a board on the global board
-	// note 1/2: in initial version it was 32 for everything
-	localWinPts = std::vector <std::vector <double>>({ {48, 32, 48}, {32, 64, 32}, {48, 32, 48} });
+	localWinPts = std::vector <std::vector <double>>({ {36, 24, 36}, {24, 48, 24}, {36, 24, 36} });
 	// Points for winning the game
 	globalWinPts = 65535;
 	// Points for having an attack on a local board (e.g. [XX.] or [X.X])
-	localAtkPts = 5;
+	localAtkPts = 4;
 	// Limit for points for attack on a local board
-	localAtkLim = 12;
+	localAtkLim = 5;
 	// Points for having an attack on the global board (winning two board in row, like [OO.] or [O.O])
 	globalAtkPts = 48;
+	// Points for an attack on adjacent board in case of future potential global attack (limited to itself)
+	// Not yet implemented
 	// Points for having a self-referencing cell, meaning it's on (i, j, i, j) coordinates
 	selfRefPts = 3;
 }
@@ -40,12 +41,15 @@ double EdgeBot::staticEval(const Field& field)
 	double result = 0;
 	for (size_t by = 0; by < 3; by++) {
 		for (size_t bx = 0; bx < 3; bx++) {
+			double temp = localWinPts[by][bx] * k(field.getWinner(by, bx));
+			if (temp != 0) {
+				result += temp;
+				continue;
+			}
 			result += selfRefPts * k(field.get(by, bx, by, bx));
-			result += localWinPts[by][bx] * k(field.getWinner(by, bx));
 			for (size_t y = 0; y < 3; y++) {
 				for (size_t x = 0; x < 3; x++) {
-					// note 2/2: in prev. version there was localPts[y][bx] bug, however it seems as an interesting strategy
-					result += globalPts[by][bx] * localPts[y][x] * k(field.get(by, bx, y, x));
+					result += (globalPts[by][bx] + localPts[y][x]) * k(field.get(by, bx, y, x));
 				}
 			}
 		}
