@@ -27,6 +27,7 @@ public:
     Cell get(size_t by, size_t bx, size_t y, size_t x) const;
 	Cell getTurn() const;
     Cell getWinner() const;
+	Cell getWinner(const size_t by, const size_t bx) const;
 	// Will return Coord(-1, -1) if next board is any
     Coord getNextBoard() const;
 	// Heavy on time and memory, better to avoid overusing these in engine logic:

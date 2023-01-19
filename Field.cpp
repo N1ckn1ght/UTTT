@@ -86,6 +86,11 @@ Cell Field::getWinner() const
     return board->getWinner();
 }
 
+Cell Field::getWinner(const size_t by, const size_t bx) const
+{
+    return board->getWinner(by, bx);
+}
+
 Coord Field::getNextBoard() const
 {
     return board->getNextBoard();
@@ -116,6 +121,9 @@ std::vector<GlobalCoord> Field::getValidMoves() const
     if (by == -1) {
         for (size_t by = 0; by < 3; by++) {
             for (size_t bx = 0; bx < 3; bx++) {
+                if (getWinner(by, bx) != Cell::Empty) {
+                    continue;
+                }
                 for (size_t y = 0; y < 3; y++) {
                     for (size_t x = 0; x < 3; x++) {
                         if (board->get(by, bx, y, x) == Cell::Empty) {
@@ -147,45 +155,45 @@ std::ostream &operator<<(std::ostream &out, Field &field)
         for (size_t y = 0; y < 3; y++) {
             out << "|";
             for (size_t bx = 0; bx < 3; bx++) {
-                switch (field.board->getWinner(by, bx)) {
-                    case Cell::Cross:
-                        out << "x x x|";
-                        break;
-                    case Cell::Null:
-                        out << "o o o|";
-                        break;
-                    case Cell::Any:
-                        out << "/ / /|";
-                        break;
-                    default:
-                        char cell = ' ';
-                        if (nextBoard.y == -1 || nextBoard == Coord(by, bx)) {
-                            cell = '.';
-                        }
-                        for (size_t x = 0; x < 3; x++) {
-                            if (field.get(by, bx, y, x) == Cell::Empty) {
-                                out << cell;
-                            } 
-                            else {
-                                switch (field.get(by, bx, y, x)) {
-                                    case Cell::Cross:
-                                        out << "X";
-                                        break;
-                                    case Cell::Null:
-                                        out << "O";
-                                        break;
-                                    default:
-                                        throw GameException();
-                                        break;
-                                }
-                            }
-                            if (x < 2) {
-                                out << " ";
-                            }
-                            else {
-                                out << "|";
+                switch (field.getWinner(by, bx)) {
+                case Cell::Cross:
+                    out << "x x x|";
+                    break;
+                case Cell::Null:
+                    out << "o o o|";
+                    break;
+                case Cell::Any:
+                    out << "/ / /|";
+                    break;
+                default:
+                    char cell = ' ';
+                    if (nextBoard.y == -1 || nextBoard == Coord(by, bx)) {
+                        cell = '.';
+                    }
+                    for (size_t x = 0; x < 3; x++) {
+                        if (field.get(by, bx, y, x) == Cell::Empty) {
+                            out << cell;
+                        } 
+                        else {
+                            switch (field.get(by, bx, y, x)) {
+                            case Cell::Cross:
+                                out << "X";
+                                break;
+                            case Cell::Null:
+                                out << "O";
+                                break;
+                            default:
+                                throw GameException();
+                                break;
                             }
                         }
+                        if (x < 2) {
+                            out << " ";
+                        }
+                        else {
+                            out << "|";
+                        }
+                    }
                 }
             }
             out << (y + 1);

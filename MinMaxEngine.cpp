@@ -1,6 +1,6 @@
 #include "MinMaxEngine.h"
 
-std::vector<EvalMove> MinMaxEngine::eval(Field& field, size_t depth) const
+std::vector<EvalMove> MinMaxEngine::eval(Field& field, size_t depth)
 {
 	bool maximizing = (field.getTurn() == Cell::Cross);
 	std::vector <GlobalCoord> legalMoves = field.getValidMoves();
@@ -8,15 +8,20 @@ std::vector<EvalMove> MinMaxEngine::eval(Field& field, size_t depth) const
 	// This outer cycle's purpose is to save evals of all possible moves in current position.
 	for (const GlobalCoord& move : legalMoves) {
 		field.move(move);
-		evals.push_back(EvalMove(move, minimax(field, depth - 1, 0, 0, !maximizing)));
+		evals.push_back(EvalMove(move, minimax(field, depth - 1, -INT_MAX, INT_MAX, !maximizing)));
 		field.revert();
 	}
 	modEvals(evals);
-	std::sort(evals.begin(), evals.end(), evalMoveCmp);
+	if (maximizing) {
+		std::sort(evals.begin(), evals.end(), evalMoveCmp);
+	}
+	else {
+		std::sort(evals.rbegin(), evals.rend(), evalMoveCmp);
+	}
 	return evals;
 }
 
-double MinMaxEngine::minimax(Field& field, size_t depth, double alpha, double beta, bool isMaximizing) const
+double MinMaxEngine::minimax(Field& field, size_t depth, double alpha, double beta, bool isMaximizing)
 {
 	if (depth < 1 || field.getWinner() != Cell::Empty) {
 		return staticEval(field);

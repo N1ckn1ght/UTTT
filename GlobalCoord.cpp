@@ -12,3 +12,9 @@ bool operator==(const GlobalCoord &lhs, const GlobalCoord &rhs)
 {
     return (lhs.by == rhs.by && lhs.bx == rhs.bx && lhs.y == rhs.y && lhs.x == rhs.x);
 }
+
+std::ostream& operator<<(std::ostream& out, const GlobalCoord& gc)
+{
+	out << "(" << (gc.bx + 1) << ", " << (gc.by + 1) << ", " << (gc.x + 1) << ", " << (gc.y + 1) << ")";
+	return out;
+}
