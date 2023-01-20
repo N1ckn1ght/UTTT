@@ -25,11 +25,11 @@ GlobalBoard::~GlobalBoard()
 
 void GlobalBoard::set(const size_t by, const size_t bx, const size_t y, const size_t x, const Cell& cell)
 {
+    history.push(Coord(by, bx));
     field[by][bx]->set(y, x, cell);
     if (field[by][bx]->getWinner() != Cell::Empty) {
         check();
     }
-    history.push(Coord(by, bx));
 }
 
 void GlobalBoard::revert()

@@ -22,9 +22,9 @@ LocalBoard::~LocalBoard()
 
 void LocalBoard::set(const size_t y, const size_t x, const Cell& cell)
 {
+    history.push(Coord(y, x));
     field[y][x] = cell;
     check();
-    history.push(Coord(y, x));
 }
 
 void LocalBoard::revert()

@@ -16,7 +16,7 @@ private:
 	// This is the main, static evaluation function.
 	// This, with the combination of min-max algo optimisations, will define the strength of the engine.
 	// Also it's possible to make it not *that* strong, but more random, and just fun to play.
-	virtual double staticEval(const Field& field) = 0;
+	virtual double staticEval(Field& field) = 0;
 public:
 	// Note: depth is set in HALF-moves!
 	// So if you're willing to have n-depth analysis, set it to 2*n.

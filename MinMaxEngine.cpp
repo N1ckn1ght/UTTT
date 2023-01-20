@@ -27,7 +27,7 @@ double MinMaxEngine::minimax(Field& field, size_t depth, double alpha, double be
 		return staticEval(field);
 	}
 	double eval;
-	// TODO: this is bad overusing of non-efficient method that needs rework.
+	// TODO: this is bad overusing of inefficient method that needs rework.
 	std::vector <GlobalCoord> legalMoves = field.getValidMoves();
 	if (isMaximizing) {
 		eval = -INT_MAX;
