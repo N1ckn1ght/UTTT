@@ -52,12 +52,19 @@ void playerVsPlayer(Field& field, bool analyze, bool reverts) {
 			cout << field << getSide(field.getTurn()) << " turn on ANY board!\n";
 		} 
 		else {
-			cout << field << getSide(field.getTurn()) << " turn on (" << (field.getNextBoard().x) + 1 << " ," << (field.getNextBoard().y) + 1 << ") board!\n";
+			cout << field << getSide(field.getTurn()) << " turn on (" << (field.getNextBoard().x) + 1 << ", " << (field.getNextBoard().y) + 1 << ") board!\n";
 		}
 		do {
 			cout << "Input: bx by x y\n\n";
 			cin >> bx >> by >> x >> y;
 			cout << "\n";
+
+			if (bx == -1 && reverts) {
+				field.revert();
+				cout << "\n1 MOVE WAS CANCELLED.\nIt's " << getSide(field.getTurn()) << " to move now!\n" << field;
+				continue;
+			}
+
 			success = field.isLegalMove(--by, --bx, --y, --x);
 		} while (!success);
 
@@ -101,7 +108,8 @@ void playerVsEdge(Field& field, size_t depth, double margin, bool pcross, bool a
 				if (bx == -1 && reverts) {
 					field.revert();
 					field.revert();
-					cout << "TWO MOVES REVERTED.\n" << field;
+					cout << "\n2 MOVES WERE CANCELLED.\n" << field;
+					continue;
 				}
 
 				success = field.isLegalMove(--by, --bx, --y, --x);
@@ -165,7 +173,8 @@ void playerVsOldEdge(Field& field, size_t depth, double margin, bool pcross, boo
 				if (bx == -1 && reverts) {
 					field.revert();
 					field.revert();
-					cout << "TWO MOVES REVERTED.\n" << field;
+					cout << "\n2 MOVES WERE CANCELLED.\n" << field;
+					continue;
 				}
 
 				success = field.isLegalMove(--by, --bx, --y, --x);
