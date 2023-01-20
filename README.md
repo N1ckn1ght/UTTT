@@ -10,24 +10,20 @@ If a move is played so that it is to win a local board by the rules of normal ti
 
 There are other variants of Ultimate Tic-Tac-Toe rules, e.g. that one where players are able to make a move on already adjudicated boards, however this variation contains really simple winning strategy thus I've decided to avoid its implementation.
 
-# How to play
+### How to play
 
-There are two kinds of moves: full and specified.
-
-You'll be required to input full move only if it's unclear on which board it's made;
-
-Otherwise you must input a specified one with only two coordinates (x, y).
-
-### Example of the full move (bx, by, x, y)
+When it's your turn to make move, you'll be asked to input its full coordinates:
 
 3 3 1 1
 
-This input will place X on board (3, 3) in cell (1, 1) if possible;
+This input will place your mark (X or O) on board (3, 3) in cell (1, 1) if possible;
 
 Otherwise you'll need to repeat the input until it's correct.
 
-### Example of a specified board move (x, y)
+### "Which bots are stronger? Why can't I play with heuristic bot anymore?"
 
-1 1
+Please, navigate to wiki of this project.
 
-This input will place X on board (bx, by) in cell (1, 1) if possible where (bx, by) are coordinates of the last move by (x, y).
+### "Meh, it could be better."
+
+If you have some issues with the game or suggestions for AI/Engine improvement, feel free to create a github issue, because this may help a lot.
