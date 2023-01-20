@@ -330,8 +330,9 @@ int main(int argc, char* argv[]) {
 	size_t edgeBotHalfDepth = 6;
 	size_t edgeBotHalfDepthEasier = 4;
 	double margin100 = 0.51;
+	double margin101 = 0.01;
 	double margin110 = 0.11;
-	double margin111 = 0.31;
+	double margin111 = 1.01;
 
 	char input  = '0';
 	char input2 = '0';
@@ -348,11 +349,13 @@ int main(int argc, char* argv[]) {
 		do {
 			cout << "Choose your enemy:\n\n";
 			cout << "1 - EdgeBot v1.1 (depth = " << edgeBotHalfDepth / 2 << ", margin = " << margin110 << ")\n";
-			cout << "2 - EdgeBot v1.0 (depth = " << edgeBotHalfDepth / 2 << ", margin = " << margin100 << ")\n";
-			cout << "3 - Edgebot v1.1 (depth = " << edgeBotHalfDepthEasier / 2 << ", margin = " << margin111 << ")\n\n";
+			cout << "2 - EdgeBot v1.1 (depth = " << edgeBotHalfDepth / 2 << ", margin = " << margin111 << ")\n";
+			cout << "3 - EdgeBot v1.1 (depth = " << edgeBotHalfDepthEasier / 2 << ", margin = " << margin110 << ")\n";
+			cout << "4 - EdgeBot v1.1 (depth = " << edgeBotHalfDepthEasier / 2 << ", margin = " << margin111 << ")\n";
+			cout << "5 - EdgeBot v1.0 (depth = " << edgeBotHalfDepth / 2 << ", margin = " << margin100 << ")\n\n";
 			cin >> input;
 			cout << "\n";
-		} while (input < '1' || input > '3');
+		} while (input < '1' || input > '4');
 		do {
 			cout << "Choose your side:\n\n";
 			cout << "1 - CROSS\n";
@@ -365,10 +368,16 @@ int main(int argc, char* argv[]) {
 			playerVsEdge(field, edgeBotHalfDepth, margin110, (input2 == '1'), true, true);
 			break;
 		case '2':
-			playerVsOldEdge(field, edgeBotHalfDepth, margin100, (input2 == '1'), true, true);
+			playerVsEdge(field, edgeBotHalfDepth, margin111, (input2 == '1'), true, true);
 			break;
 		case '3':
+			playerVsEdge(field, edgeBotHalfDepthEasier, margin110, (input2 == '1'), true, true);
+			break;
+		case '4':
 			playerVsEdge(field, edgeBotHalfDepthEasier, margin111, (input2 == '1'), true, true);
+			break;
+		case '5':
+			playerVsOldEdge(field, edgeBotHalfDepth, margin100, (input2 == '1'), true, true);
 			break;
 		default:
 			break;
@@ -399,9 +408,11 @@ int main(int argc, char* argv[]) {
 			cout << "1 - EdgeBot v1.1 (depth = " << edgeBotHalfDepth / 2 << ", margin = " << margin110 << ") vs EdgeBot v1.0 (depth = " << edgeBotHalfDepth / 2 << ", margin = " << margin100 << ")\n";
 			cout << "2 - EdgeBot v1.0 (depth = " << edgeBotHalfDepth / 2 << ", margin = " << margin100 << ") vs EdgeBot v1.1 (depth = " << edgeBotHalfDepth / 2 << ", margin = " << margin110 << ")\n";
 			cout << "3 - EdgeBot v1.1 (depth = " << edgeBotHalfDepth / 2 << ", margin = " << margin110 << ") vs EdgeBot v1.1 (depth = " << edgeBotHalfDepth / 2 << ", margin = " << margin110 << ")\n";
+			cout << "4 - EdgeBot v1.1 (depth = " << edgeBotHalfDepthEasier / 2 << ", margin = " << margin110 << ") vs EdgeBot v1.0 (depth = " << edgeBotHalfDepth / 2 << ", margin = " << margin101 << ")\n";
+			cout << "5 - EdgeBot v1.0 (depth = " << edgeBotHalfDepth / 2 << ", margin = " << margin101 << ") vs EdgeBot v1.1 (depth = " << edgeBotHalfDepthEasier / 2 << ", margin = " << margin110 << ")\n";
 			cin >> input;
 			cout << "\n";
-		} while (input < '1' || input > '3');
+		} while (input < '1' || input > '5');
 		switch (input) {
 		case '1':
 			edgeVsOldEdge(field, edgeBotHalfDepth, edgeBotHalfDepth, margin100, margin110, false);
@@ -411,6 +422,12 @@ int main(int argc, char* argv[]) {
 			break;
 		case '3':
 			edgeVsEdge(field, edgeBotHalfDepth, edgeBotHalfDepth, margin110, margin110);
+			break;
+		case '4':
+			edgeVsOldEdge(field, edgeBotHalfDepth, edgeBotHalfDepthEasier, margin101, margin110, false);
+			break;
+		case '5':
+			edgeVsOldEdge(field, edgeBotHalfDepth, edgeBotHalfDepthEasier, margin101, margin110, true);
 			break;
 		default:
 			break;

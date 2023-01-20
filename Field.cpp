@@ -150,10 +150,16 @@ std::ostream &operator<<(std::ostream &out, Field &field)
 {
     Coord nextBoard = field.getNextBoard();
 
-    out << "\n------+-----+------\n";
+    out << "\n       1     2     3   bx\n     1 2 3 1 2 3 1 2 3 x\n    +-----+-----+-----+\n";
     for (size_t by = 0; by < 3; by++) {
         for (size_t y = 0; y < 3; y++) {
-            out << "|";
+            if (y == 1) {
+                out << (by + 1) << " ";
+            }
+            else {
+                out << "  ";
+            }
+            out << (y + 1) << " |";
             for (size_t bx = 0; bx < 3; bx++) {
                 switch (field.getWinner(by, bx)) {
                 case Cell::Cross:
@@ -196,18 +202,16 @@ std::ostream &operator<<(std::ostream &out, Field &field)
                     }
                 }
             }
-            out << (y + 1);
-            if (y == 1) {
-                out << " " << (by + 1);
-            }
             out << "\n";
         }
-        out << "------+-----+------";
         if (by == 2) {
-            out << "y by";
+            out << "byy ";
         }
-        out << "\n";
+        else {
+            out << "    ";
+        }
+        out << "+-----+-----+-----+\n";
     }
-    out << " 1 2 3 1 2 3 1 2 3 x\n   1     2     3   bx\n\n";
+    out << "\n";
     return out;
 }
