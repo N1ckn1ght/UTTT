@@ -24,6 +24,16 @@ This input will place your mark (X or O) on board (3, 3) in cell (1, 2) if possi
 
 Otherwise you'll need to repeat the input until it's correct.
 
+### I accidentally made a wrong move, what do?
+
+-1 1 1 1
+
+Type in console full coordinate with -1 as bx and it'll revert your move.
+
+Note, that it will make two reverts in games versus bot to keep move order correct.
+
+Just don't abuse this mechanic =)
+
 # FAQ
 
 ### "Which bots are stronger? Why can't I play with heuristic bot anymore?"
