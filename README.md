@@ -30,13 +30,13 @@ Otherwise you'll need to repeat the input until it's correct.
 
 There's a detailed description of what's hapenning, it's in the Github wiki, but it's in Russian.
 
-Short answer - old heuristic bot had many severe memory leaks and wasn't as effective as I wish it would. So I rewrote whole field class, now it's memory efficient. I also implemented simple MinMax-Engine and I have a plan to make new Heurist bot using it, but... that engine is time inefficient.
+Short answer - old heuristic bot had many severe memory leaks and wasn't as effective as I wish it would. So I rewrote whole field class, now it's memory efficient. I've also implemented a simple min-max engine and I have a plan to make a new Heurist bot based on it, but... that engine is time inefficient.
 
 So, I just need more time to re-implement Heurist again, with even more power and shine. You can always download old release of UTTT (ver. 1.0) and play with ol' buddy Eurist, if you want!
 
 ...And, of course, EdgeBot v1.1 is stronger than EdgeBot v1.0 in most case scenario, potentially in all cases. You can test it for yourself. But first version, sometimes, can make interesting plays... and it confuses first version of heuristic bot a lot. 
 
-A difference between EdgeBot v1.0 and EdgeBot v1.1 is provided by slight static evaluation function changes...
+A difference between EdgeBot v1.0 and EdgeBot v1.1 is provided by slight static evaluation function changes, they are both based on the same MinMax Engine...
 
 ### "Meh, it could be better."
 
