@@ -55,7 +55,7 @@ void playerVsPlayer(Field& field, bool analyze, bool reverts) {
 			cout << field << getSide(field.getTurn()) << " turn on (" << (field.getNextBoard().x) + 1 << " ," << (field.getNextBoard().y) + 1 << ") board!\n";
 		}
 		do {
-			cout << "Input: bx by x y\n";
+			cout << "Input: bx by x y\n\n";
 			cin >> bx >> by >> x >> y;
 			cout << "\n";
 			success = field.isLegalMove(--by, --bx, --y, --x);
@@ -409,7 +409,7 @@ int main(int argc, char* argv[]) {
 			cout << "2 - EdgeBot v1.0 (depth = " << edgeBotHalfDepth / 2 << ", margin = " << margin100 << ") vs EdgeBot v1.1 (depth = " << edgeBotHalfDepth / 2 << ", margin = " << margin110 << ")\n";
 			cout << "3 - EdgeBot v1.1 (depth = " << edgeBotHalfDepth / 2 << ", margin = " << margin110 << ") vs EdgeBot v1.1 (depth = " << edgeBotHalfDepth / 2 << ", margin = " << margin110 << ")\n";
 			cout << "4 - EdgeBot v1.1 (depth = " << edgeBotHalfDepthEasier / 2 << ", margin = " << margin110 << ") vs EdgeBot v1.0 (depth = " << edgeBotHalfDepth / 2 << ", margin = " << margin101 << ")\n";
-			cout << "5 - EdgeBot v1.0 (depth = " << edgeBotHalfDepth / 2 << ", margin = " << margin101 << ") vs EdgeBot v1.1 (depth = " << edgeBotHalfDepthEasier / 2 << ", margin = " << margin110 << ")\n";
+			cout << "5 - EdgeBot v1.0 (depth = " << edgeBotHalfDepth / 2 << ", margin = " << margin101 << ") vs EdgeBot v1.1 (depth = " << edgeBotHalfDepthEasier / 2 << ", margin = " << margin110 << ")\n\n";
 			cin >> input;
 			cout << "\n";
 		} while (input < '1' || input > '5');
