@@ -24,7 +24,7 @@ This input will place your mark (X or O) on board (3, 3) in cell (1, 2) if possi
 
 Otherwise you'll need to repeat the input until it's correct.
 
-### I accidentally made a wrong move, what do?
+### "I accidentally made a wrong move, what do?"
 
 -1 1 1 1
 
