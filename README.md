@@ -10,19 +10,29 @@ If a move is played so that it is to win a local board by the rules of normal ti
 
 There are other variants of Ultimate Tic-Tac-Toe rules, e.g. that one where players are able to make a move on already adjudicated boards, however this variation contains really simple winning strategy thus I've decided to avoid its implementation.
 
-### How to play
+# How to play
 
-When it's your turn to make move, you'll be asked to input its full coordinates:
+When it's your turn to make move, you'll be asked to input its full coordinates in this format:
 
-3 3 1 1
+board_X board_Y X Y
 
-This input will place your mark (X or O) on board (3, 3) in cell (1, 1) if possible;
+### Example of move
+
+3 3 1 2
+
+This input will place your mark (X or O) on board (3, 3) in cell (1, 2) if possible;
 
 Otherwise you'll need to repeat the input until it's correct.
 
+# FAQ
+
 ### "Which bots are stronger? Why can't I play with heuristic bot anymore?"
 
-Please, navigate to wiki of this project.
+There's a detailed description of what's hapenning, it's in the Github wiki, but it's in Russian.
+
+Short answer - old heuristic bot had many severe memory leaks and wasn't as effective as I wish it would. So I rewrote whole field class, now it's memory efficient. I also implemented simple MinMax-Engine and I have a plan to make new Heurist bot using it, but... that engine is time inefficient.
+
+So, I just need more time to re-implement Heurist again, with even more power and shine. You can always download old release of UTTT (ver. 1.0) and play with ol' buddy Eurist, if you want!
 
 ### "Meh, it could be better."
 
