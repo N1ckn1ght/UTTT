@@ -34,6 +34,10 @@ Short answer - old heuristic bot had many severe memory leaks and wasn't as effe
 
 So, I just need more time to re-implement Heurist again, with even more power and shine. You can always download old release of UTTT (ver. 1.0) and play with ol' buddy Eurist, if you want!
 
+...And, of course, EdgeBot v1.1 is stronger than EdgeBot v1.0 in most case scenario, potentially in all cases. You can test it for yourself. But first version, sometimes, can make interesting plays... and it confuses first version of heuristic bot a lot. 
+
+A difference between EdgeBot v1.0 and EdgeBot v1.1 is provided by slight static evaluation function changes...
+
 ### "Meh, it could be better."
 
 If you have some issues with the game or suggestions for AI/Engine improvement, feel free to create a github issue, because this may help a lot.
